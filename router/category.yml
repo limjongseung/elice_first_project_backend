@@ -1,0 +1,82 @@
+paths:
+  /category:
+    get:
+      tags:
+        - Category
+      summary: 카테고리 조회
+      description: |
+        모든 카테고리 조회
+      responses:
+        "200":
+          description: OK
+
+    post:
+      tags:
+        - Category
+      summary: 카테고리 등록
+      description: |
+        한 카테고리 등록
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: # Request parts
+                name:
+                  type: string
+              required:
+                - name
+
+      responses:
+        "200":
+          description: OK
+
+  /category/{categoryShortId}:
+    post:
+      tags:
+        - Category
+      summary: 카테고리 수정
+      description: |
+        해당 카테고리 수정
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryShortId
+          in: path
+          description: 카테고리 shortId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: # Request parts
+                name:
+                  type: string
+              required:
+                - name
+      responses:
+        "200":
+          description: OK
+
+    delete:
+      tags:
+        - Category
+      summary: 카테고리 삭제
+      description: 해당 카테고리 삭제
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryShortId
+          in: path
+          description: 카테고리 shortId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK

@@ -1,0 +1,148 @@
+paths:
+  /product:
+    get:
+      tags:
+        - Product
+      summary: 상품 조회
+      description: |
+        모든 상품 조회
+      parameters:
+        - name: categoryShortId
+          in: query
+          description: 조회할 카테고리 shortId. 일치하는 카테고리가 없다면, 모든 상품을 조회.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+    post:
+      tags:
+        - Product
+      summary: 상품 등록
+      description: |
+        한 상품 등록
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: # Request parts
+                name:
+                  type: string
+                price:
+                  type: integer
+                company:
+                  type: string
+                categoryShortId:
+                  type: string
+                description:
+                  type: string
+                thumbnail:
+                  type: string
+                  format: base64
+                img:
+                  type: string
+                  format: base64
+              required:
+                - thumbnail
+                - img
+                - name
+                - price
+                - company
+                - categoryShortId
+                - description
+            encoding: # The same level as schema
+              profileImage: # Property name (see above)
+                contentType: image/png, image/jpeg
+
+      responses:
+        "200":
+          description: OK
+
+  /product/{productShortId}:
+    get:
+      tags:
+        - Product
+      summary: 상품 조회
+      description: 해당 상품 조회
+      parameters:
+        - name: productShortId
+          in: path
+          description: 상품 shortId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Error
+
+    post:
+      tags:
+        - Product
+      summary: 상품 수정
+      description: |
+        한 상품 수정
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productShortId
+          in: path
+          description: 상품 shortId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: # Request parts
+                name:
+                  type: string
+                price:
+                  type: integer
+                company:
+                  type: string
+                categoryShortId:
+                  type: string
+                description:
+                  type: string
+                thumbnail:
+                  type: string
+                  format: base64
+                img:
+                  type: string
+                  format: base64
+              required:
+                - name
+                - price
+                - company
+                - categoryShortId
+                - description
+
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+        - Product
+      summary: 상품 삭제
+      description: 해당 상품 삭제
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productShortId
+          in: path
+          description: 상품 shortId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK

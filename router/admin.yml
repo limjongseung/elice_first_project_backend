@@ -1,0 +1,165 @@
+openapi: '3.0.0'
+info:
+  title: API Title
+  version: '1.0'
+paths:
+  /admin:
+    get:
+      tags:
+        - Admin
+      summary: 관리자 정보 확인
+      description: |
+        관리자 정보 확인 API
+      security:
+        - bearerAuth: []
+      responses:
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: OK
+    post:
+      tags:
+        - Admin
+      summary:
+        관리자 가입
+      description: |
+        관리자 가입 API 입니다.  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/admin'
+            example:
+              email : "admin@test.com"
+              name: "관리자"
+              nickname: "관리자 닉네임을 넣어주세요"
+              password: "1234"
+              mobile: "011-1234-5678"
+              phone: "070-1234-5678"
+
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      summary:  관리자 탈퇴
+      description: |
+        관리자 데이터를 DB 에서 바로 삭제 합니다.  
+        데이터를 남겨놓지 않고 삭제하기 때문에 복구가 안됩니다.  
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: no data
+  
+    put:
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      summary: 관리자정보 수정
+      description: |
+        관리자정보를 수정하는 API  
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/admin'
+            example:
+              email: "edit_admin@test.com"
+              name: "수정된 관리자"
+              nickname: "관리자 닉네임을 수정했습니다"
+              password: "5678"
+              mobile: "100-1234-5678"
+              phone: "707-1234-5678"
+
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: error
+  
+  /admin/login:
+    post:
+      tags:
+        - Admin
+      summary:  관리자 로그인
+      description: |
+        로그인용 API 해당 로그인은 requestbody 로 받습니다.  
+        email 과 password 만 받습니다.  
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: "admin@test.com"
+              password: "1234"
+      responses:
+        '200':
+          description: OK
+        '400':
+          description:  error
+
+  /admin/userlist:
+    get:
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      summary:  전체 유저 리스트
+      description: |
+       전체 유자 리스트 API 입니다.  
+       관리자 페이지나 다른 페이지에서 전체 유저의 리스트를 가져와야 할때 사용합니다.  
+       별다른 리밋이 걸려있지 않기 때문에 유저가 많아지면 문제 생깁니다.  
+        불필요한 테이블 값이 매우 많기 때문에 API 에 따라 해당 내용의 삭제가 있을 수 있습니다.  
+       페이지네이션 처리 필요
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: No Data
+  
+  
+security:
+  - bearerAuth: []
+
+components:
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    admin:
+      type: object
+      properties:
+        email: 
+          type: string
+        name:
+          type: string
+        nickname:
+          type: string
+        password:
+          type: string
+        mobile:
+          type: string
+        phone:
+          type: string
+     
+
+      
+      

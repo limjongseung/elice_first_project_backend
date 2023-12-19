@@ -1,0 +1,248 @@
+openapi: 3.0.0
+info:
+  title: 주문 관리 API
+  description: 주문 생성, 조회, 취소, 수정을 위한 API 문서
+  version: 1.0.0
+
+paths:
+  /orderuser:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Order
+      summary: 오더 리스트 조회
+      responses:
+        '200':
+          description: 오더 리스트 조회 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 오더 리스트 조회 결과
+
+    post:
+      summary: 오더 저장
+      description: |
+        유저가 쿠키에 있는 장바구니를 서버에 저장할때 사용  
+        클라에서는 서버로 장바구니 아이템의 short id 와 수량만 전송한다.  
+        차후 할인이나 쿠폰 적용시 추가 로직 개발 필요
+      tags:
+        - User Order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderedProducts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                        description: 주문한 상품 ID
+                      quantity:
+                        type: integer
+                        description: 상품 주문 수량
+                      price:
+                        type: integer
+                        description: 상품 주문 수량
+              example:
+                orderedProducts: [
+                  {
+                    "productId": "M8332QDBXD35xPd8rCyNx",
+                    "quantity": 3,
+                  },
+                  {
+                    "productId": "JzM4BPsyKVP8z1-WrFK3X",
+                    "quantity": 6
+                  }
+                ]
+      responses:
+        '201':
+          description: 주문 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: 생성된 주문의 ID
+        '401':
+          description: 인증 실패
+
+        
+  /orderuser/{orderId}:
+    delete:
+      tags:
+        - User Order
+      summary: 오더 삭제
+      description: |
+        유저가 오더를 삭제 한다.  
+        오더 리스트에서의 오더를 삭제하는 기능  
+        오더 리스트 내에서의 아이템 별도 삭제 기능은 다른 API 를 참조  
+      security:
+         - bearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          description: 오더 아이디 입력
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+        '400':
+          description: error
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Order
+      summary: 상세 주문 내역
+      parameters:
+        - name: orderId
+          in: path
+          description: 오더 ID 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 상세주문 내역 확인 
+          content:
+            application/json:
+              schema:
+                type: object
+                description: 상제 주문 정보
+        '404':
+          description: 주문을 찾을 수 없음
+        '401':
+          description: 인증 실패
+
+    put:
+      tags:
+        - User Order
+      security:
+        - bearerAuth: []
+      summary: 오더 정보 수정
+      description: |
+        오더 정보를 수정하는 API  
+
+      parameters:
+        - name: orderId
+          in: path
+          description: 수정할 주문의 ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: 유저정보 수정 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              address: "배송을 위해 변경된 주소입니다"
+              shipping_status: "배송준비중"
+              phone: "070-8282-4982"
+      responses:
+        '200':
+          description: 주문 수정 성공
+        '404':
+          description: 주문 수정 실패
+        '401':
+          description: 인증 실패
+  /orderuser/{orderId}/{orderProductId}:
+    put:
+      tags:
+        - User Order
+      security:
+        - bearerAuth: []
+      summary: 오더 정보 수정
+      description: |
+        오더 정보를 수정하는 API  
+
+      parameters:
+        - name: orderId
+          in: path
+          description: 수정할 주문의 ID
+          required: true
+          schema:
+            type: string
+        - name: orderProductId
+          in: path
+          description: 수정할 주문의 제품 ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: 유저정보 수정 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              quantity: 7
+      responses:
+        '200':
+          description: 주문 수정 성공
+        '404':
+          description: 주문 수정 실패
+        '401':
+          description: 인증 실패
+
+components:
+  schemas:
+    orderList:
+      type: object
+      properties:
+        user_id:
+          type: string
+        user_email:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        shipping_status:
+          type: string
+
+    orderProduct:
+      type: object
+      properties:
+        order_id:
+          type: string
+        user_email:
+          type: string
+        name:
+          type: string
+        product_id:
+          type: string
+        price:
+          type: number
+        company:
+          type: string
+        description:
+          type: string
+        img:
+          type: string
+        quantity:
+          type: number
+        category:
+          type: string

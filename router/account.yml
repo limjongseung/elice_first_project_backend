@@ -1,0 +1,145 @@
+openapi: '3.0.0'
+info:
+  title: API Title
+  version: '1.0'
+paths:
+  /account:
+    get:
+      tags:
+        - Account
+      summary: 유저정보 확인
+      description: |
+        유저정보 확인 API
+      security:
+        - bearerAuth: []
+      responses:
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '200':
+          description: OK
+    post:
+      tags:
+        - Account
+      summary:
+        유저 가입
+      description: |
+        유저 가입 API 입니다.  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+            example:
+              email : "test_eamil@test.com"
+              name: "엘리스"
+              nickname: "6기"
+              password: "1234"
+              address: "기존 주소 입니다."
+              zipcode: 1234567
+              mobile: "011-1234-5678"
+              phone: "070-1234-5678"
+
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+        - Account
+      security:
+        - bearerAuth: []
+      summary:  유저 탈퇴
+      description: |
+        유저 데이터를 DB 에서 바로 삭제 합니다.  
+        데이터를 남겨놓지 않고 삭제하기 때문에 복구가 안됩니다.  
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: no data
+    put:
+      tags:
+        - Account
+      security:
+        - bearerAuth: []
+      summary: 유저정보 수정
+      description: |
+        유저정보를 수정하는 API  
+
+      requestBody:
+        description: 유저정보 수정 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              name: "김수정"
+              nickname: "수정된 닉네임"
+              password: "5678"
+              address: "수정된 주소 입니다."
+              zipcode: 7654321
+              mobile: "100-1234-5678"
+              phone: "707-1234-5678"
+
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: error
+          
+  /account/login:
+    post:
+      tags:
+        - Account
+      summary:  유저 로그인
+      description: |
+        로그인용 API 해당 로그인은 requestbody 로 받습니다.  
+        email 과 password 만 받습니다.  
+
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: "test_eamil@test.com"
+              password: "1234"
+
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: error
+security:
+  - bearerAuth: []
+
+components:
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    user:
+      type: object
+      properties:
+        email: 
+          type: string
+        name:
+          type: string
+        nickname:
+          type: string
+        password:
+          type: string
+        address:
+          type: string
+        zipcode:
+          type: integer
+        mobile:
+          type: string
+        phone:
+          type: string
+     
